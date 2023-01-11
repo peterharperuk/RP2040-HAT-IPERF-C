@@ -66,6 +66,7 @@ git clone --recurse-submodules https://github.com/wiznet-mason/RP2040-HAT-IPERF-
 /* build */
 cd RP2040-HAT-IPERF-C
 mkdir build
+cd build
 cmake -G "NMake Makefiles" ..
 nmake
 
