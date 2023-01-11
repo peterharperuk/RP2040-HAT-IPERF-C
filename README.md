@@ -95,6 +95,9 @@ When using W5500-EVB-Pico :
 set(WIZNET_CHIP W5500)
 ```
 
+3. Test
+
+Please refer to 'README.md' in each example directory to find detail guide for testing iperf examples.
 <!--
 Link
 -->

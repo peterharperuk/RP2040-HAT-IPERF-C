@@ -29,7 +29,7 @@ If you are using W5100S-EVB-Pico or W5500-EVB-Pico, you can skip '1. Combine...'
 
 To test the iPerf example, minor settings shall be done in code.
 
-1. Setup SPI port and pin in 'w5x00_spi.h' in 'RP2040-HAT-LWIP-C/port/ioLibrary_Driver/' directory.
+1. Setup SPI port and pin in 'w5x00_spi.h' in 'RP2040-HAT-IPERF-C/port/ioLibrary_Driver/' directory.
 
 Setup the SPI interface you use.
 
@@ -48,21 +48,21 @@ If you want to test with the iPerf example using SPI DMA, uncomment USE_SPI_DMA.
 
 ```cpp
 /* Use SPI DMA */
-//#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
+#define USE_SPI_DMA // if you want to use SPI DMA, uncomment.
 ```
 
-2. Setup network configuration such as IP in 'w5x00_lwiperf.c' which is the iPerf example in 'RP2040-HAT-LWIP-C/examples/lwiperf/' directory.
+2. Setup network configuration such as IP in 'w5x00_lwiperf.c' which is the iPerf example in 'RP2040-HAT-IPERF-C/examples/lwiperf/' directory.
 
 Setup IP and other network settings to suit your network environment.
 
 ```cpp
 // Initialize network configuration
-IP4_ADDR(&g_ip, 192, 168, 11, 2);
+IP4_ADDR(&g_ip, 192, 168, 2, 120);
 IP4_ADDR(&g_mask, 255, 255, 255, 0);
-IP4_ADDR(&g_gateway, 192, 168, 11, 1);
+IP4_ADDR(&g_gateway, 192, 168, 2, 1);
 ```
 
-3. Setup iPerf configuration in 'w5x00_lwiperf.c' in 'RP2040-HAT-LWIP-C/examples/lwiperf/' directory.
+3. Setup iPerf configuration in 'w5x00_lwiperf.c' in 'RP2040-HAT-IPERF-C/examples/lwiperf/' directory.
 
 ```cpp
 /* Port */
@@ -75,7 +75,7 @@ IP4_ADDR(&g_gateway, 192, 168, 11, 1);
 
 1. After completing the iPerf example configuration, click 'build' in the status bar at the bottom of Visual Studio Code or press the 'F7' button on the keyboard to build.
 
-2. When the build is completed, 'w5x00_lwiperf.uf2' is generated in 'RP2040-HAT-LWIP-C/build/examples/lwiperf/' directory.
+2. When the build is completed, 'w5x00_lwiperf_test.uf2' is generated in 'RP2040-HAT-IPERF-C/build/examples/lwiperf/' directory.
 
 
 
@@ -85,7 +85,7 @@ IP4_ADDR(&g_gateway, 192, 168, 11, 1);
 
 ![][link-raspberry_pi_pico_usb_mass_storage]
 
-2. Drag and drop 'w5x00_lwiperf.uf2' onto the USB mass storage device 'RPI-RP2'.
+2. Drag and drop 'w5x00_lwiperf_test.uf2' onto the USB mass storage device 'RPI-RP2'.
 
 3. Connect to the serial COM port of Raspberry Pi Pico, W5100S-EVB-Pico or W5500-EVB-Pico with Tera Term.
 
@@ -119,12 +119,14 @@ cd D:/iperf-2.0.9-win64
 iperf -c [connecting to] -i [seconds between periodic bandwidth reports] -t [time in seconds to transmit for]
 
 // e.g.
-iperf -c 192.168.11.253 -i 1 -t 10
+iperf -c 192.168.2.120 -i 1 -t 100
 ```
 
-![][link-run_network_performance_measurement_test]
+Test result 1 (PLL_SYS_KHZ = 133Mhz, SPI_CLOCK = 33.25Mhz)
+![][link-test_result_1]
 
-
+Test result 2 (PLL_SYS_KHZ = 144Mhz, SPI_CLOCK = 36Mhz)
+![][link-test_result_2]
 
 <!--
 Link
@@ -132,9 +134,10 @@ Link
 
 [link-tera_term]: https://osdn.net/projects/ttssh2/releases/
 [link-iperf]: https://iperf.fr/iperf-download.php
-[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/Wiznet/RP2040-HAT-LWIP-C/blob/main/static/images/lwiperf/raspberry_pi_pico_usb_mass_storage.png
-[link-connect_to_serial_com_port]: https://github.com/Wiznet/RP2040-HAT-LWIP-C/blob/main/static/images/lwiperf/connect_to_serial_com_port.png
-[link-see_network_information_of_raspberry_pi_pico_and_open_tcp_server]: https://github.com/Wiznet/RP2040-HAT-LWIP-C/blob/main/static/images/lwiperf/see_network_information_of_raspberry_pi_pico_and_open_tcp_server.png
-[link-run_command_prompt]: https://github.com/Wiznet/RP2040-HAT-LWIP-C/blob/main/static/images/lwiperf/run_command_prompt.png
-[link-move_to_iperf_path]: https://github.com/Wiznet/RP2040-HAT-LWIP-C/blob/main/static/images/lwiperf/move_to_iperf_path.png
-[link-run_network_performance_measurement_test]: https://github.com/Wiznet/RP2040-HAT-LWIP-C/blob/main/static/images/lwiperf/run_network_performance_measurement_test.png
+[link-raspberry_pi_pico_usb_mass_storage]: https://github.com/Wiznet/RP2040-HAT-IPERF-C/blob/main/static/images/lwiperf/raspberry_pi_pico_usb_mass_storage.png
+[link-connect_to_serial_com_port]: https://github.com/Wiznet/RP2040-HAT-IPERF-C/blob/main/static/images/lwiperf/connect_to_serial_com_port.png
+[link-see_network_information_of_raspberry_pi_pico_and_open_tcp_server]: https://github.com/Wiznet/RP2040-HAT-IPERF-C/blob/main/static/images/lwiperf/see_network_information_of_raspberry_pi_pico_and_open_tcp_server.png
+[link-run_command_prompt]: https://github.com/Wiznet/RP2040-HAT-IPERF-C/blob/main/static/images/lwiperf/run_command_prompt.png
+[link-move_to_iperf_path]: https://github.com/Wiznet/RP2040-HAT-IPERF-C/blob/main/static/images/lwiperf/move_to_iperf_path.png
+[link-test_result_1]: https://github.com/Wiznet/RP2040-HAT-IPERF-C/blob/main/static/images/lwiperf/test_result_1.png
+[link-test_result_2]: https://github.com/Wiznet/RP2040-HAT-IPERF-C/blob/main/static/images/lwiperf/test_result_2.png
