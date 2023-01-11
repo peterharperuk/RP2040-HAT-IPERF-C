@@ -1,0 +1,1 @@
+add_subdirectory(w5x00_lwiperf_test)
