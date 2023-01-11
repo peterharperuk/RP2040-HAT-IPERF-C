@@ -28,7 +28,7 @@ The examples use **Raspberry Pi Pico** and **WIZnet Ethernet HAT** - ethernet I/
 
 - [**Raspberry Pi Pico**][link-raspberry_pi_pico]
 
-<p align="center"><img src="https://assets.raspberrypi.com/static/74679d6c81ffc5503a20b64feae2ed4f/2b8d7/pico-rp2040.webp"></p>
+<p align="center"><img src="https://assets.raspberrypi.com/static/74679d6c81ffc5503a20b64feae2ed4f/3564b/pico-rp2040.jpg"></p>
 
 - [**WIZnet Ethernet HAT**][link-wiznet_ethernet_hat]
 
