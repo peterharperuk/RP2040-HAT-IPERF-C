@@ -11,6 +11,7 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "w5x00_lwip.h"
 
@@ -93,6 +94,10 @@ int32_t recv_lwip(uint8_t sn, uint8_t *buf, uint16_t len)
         pack_len = (pack_len << 8) + head[1];
         pack_len -= 2;
 
+        if (pack_len > 1514) {
+            printf("Comms failure pack_len=%u (mtu is %u)\n", pack_len, 1514);
+        }
+        assert(pack_len <= 1514); // we've had a failure to communicate
         if (pack_len > len)
         {
             // Packet is bigger than buffer - drop the packet

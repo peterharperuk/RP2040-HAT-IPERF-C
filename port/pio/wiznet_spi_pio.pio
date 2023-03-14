@@ -13,7 +13,7 @@ public write_bits:
     set pins 0              side 0
 public write_end:
 read_byte_delay:
-    set pindirs 0           side 0 [1]
+    set pindirs 0           side 0 [1] ; adds a delay between bytes
 read_byte:
     set x 6                 side 1
 read_bits:
