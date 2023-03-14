@@ -20,8 +20,11 @@ target_link_libraries(${TARGET_NAME} PRIVATE
         IOLIBRARY_FILES
         lwip
         WIZ_LWIP_FILES
+        pico_wiznet_spi_pio
         )
-
+target_compile_definitions(${TARGET_NAME} PRIVATE
+        PICO_USE_PIO=1
+        )
 pico_enable_stdio_usb(${TARGET_NAME} 1)
 pico_enable_stdio_uart(${TARGET_NAME} 0)
 

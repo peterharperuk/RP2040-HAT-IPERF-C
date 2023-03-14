@@ -39,3 +39,5 @@ target_link_libraries(WIZ_LWIP_FILES PRIVATE
         ETHERNET_FILES
         lwip
         )
+
+add_subdirectory(pio)
