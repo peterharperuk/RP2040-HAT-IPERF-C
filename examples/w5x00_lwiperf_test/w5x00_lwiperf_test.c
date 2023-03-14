@@ -21,6 +21,7 @@
 #include "lwip/init.h"
 #include "lwip/netif.h"
 #include "lwip/timeouts.h"
+#include "lwip/dhcp.h"
 
 #include "lwip/apps/lwiperf.h"
 #include "lwip/etharp.h"
@@ -50,6 +51,7 @@ extern uint8_t mac[6];
 static ip_addr_t g_ip;
 static ip_addr_t g_mask;
 static ip_addr_t g_gateway;
+static struct dhcp g_dhcp_client;
 
 /* LWIP */
 struct netif g_netif;
@@ -69,6 +71,19 @@ wiz_PhyConf gPhyConf = {.by = PHY_CONFBY_SW,
 /* Clock */
 static void set_clock_khz(void);
 
+static void iperf_report(void *arg, enum lwiperf_report_type report_type,
+                         const ip_addr_t *local_addr, u16_t local_port, const ip_addr_t *remote_addr, u16_t remote_port,
+                         u32_t bytes_transferred, u32_t ms_duration, u32_t bandwidth_kbitpsec) {
+    static uint32_t total_iperf_megabytes = 0;
+    uint32_t mbytes = bytes_transferred / 1024 / 1024;
+    float mbits = bandwidth_kbitpsec / 1000.0;
+
+    total_iperf_megabytes += mbytes;
+
+    printf("Completed iperf transfer of %d MBytes @ %.1f Mbits/sec\n", mbytes, mbits);
+    printf("Total iperf megabytes since start %d Mbytes\n", total_iperf_megabytes);
+}
+
 /**
  * ----------------------------------------------------------------------------------------------------
  * Main
@@ -83,10 +98,9 @@ int main()
     struct pbuf *p = NULL;
 
     // Initialize network configuration
-    IP4_ADDR(&g_ip, 192, 168, 2, 120);
+    IP4_ADDR(&g_ip, 0, 0, 0, 0);
     IP4_ADDR(&g_mask, 255, 255, 255, 0);
-    IP4_ADDR(&g_gateway, 192, 168, 2, 1);
-
+    IP4_ADDR(&g_gateway, 192, 168, 0, 1);
     set_clock_khz();
 
     // Initialize stdio after the clock change
@@ -127,12 +141,29 @@ int main()
     netif_set_link_up(&g_netif);
     netif_set_up(&g_netif);
 
-    // Start lwiperf server
-    lwiperf_start_tcp_server_default(fn, NULL);
+    dhcp_set_struct(&g_netif, &g_dhcp_client);
+    dhcp_start(&g_netif);
+
+    printf("Waiting for IP address\n");
+    bool have_ip_address = false;
+    absolute_time_t ip_address_timeout = make_timeout_time_ms(30000); // 30s timeout
 
     /* Infinite loop */
     while (1)
     {
+        if (!have_ip_address) {
+            if (time_reached(ip_address_timeout)) {
+                printf("Failed to get IP address\n");
+                return -1;
+            }
+            have_ip_address = (ip_2_ip4(&g_netif.ip_addr)->addr != 0);
+            if (have_ip_address) {
+                // Start lwiperf server
+                printf("\nReady, running iperf server at %s\n", ip4addr_ntoa(netif_ip4_addr(&g_netif)));
+                if (!fn) fn = iperf_report;
+                lwiperf_start_tcp_server_default(fn, NULL);
+            }
+        }
         getsockopt(SOCKET_MACRAW, SO_RECVBUF, &pack_len);
         if (pack_len > 0)
         {
